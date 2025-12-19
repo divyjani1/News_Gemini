@@ -1,0 +1,97 @@
+# =========================
+# Python cache / compiled
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# =========================
+# Virtual Environment
+# =========================
+venv/
+env/
+.venv/
+
+# =========================
+# Environment variables
+# =========================
+.env
+.env.*
+*.env
+
+# =========================
+# IDE / Editor files
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================
+# OS generated files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# Database / Local data
+# =========================
+Db/
+*.db
+*.sqlite3
+
+# =========================
+# OCR / Images / Media
+# =========================
+Photo/
+Image_analysis/
+*.jpg
+*.jpeg
+*.png
+*.webp
+*.tiff
+
+# =========================
+# OCR Output / Temp
+# =========================
+output/
+temp/
+cache/
+
+# =========================
+# API keys / credentials
+# =========================
+*.key
+*.pem
+credentials.json
+service_account.json
+
+# =========================
+# Test / scratch scripts
+# =========================
+api_testing/
+test.py
+
+# =========================
+# Node / tooling (if any)
+# =========================
+node_modules/
+npm-debug.log*
+
+# =========================
+# Build / distribution
+# =========================
+build/
+dist/
+*.egg-info/
+
+# =========================
+# Jupyter
+# =========================
+.ipynb_checkpoints/
