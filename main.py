@@ -6,12 +6,17 @@ from tools.Image_to_text import images_to_text_dict
 # from Image_analysis.analyze_all import analyze_all_images
 from tools.db_with_translate import translate_text
 import asyncio
+from Db.db import db
+from get_data_from_db import get_data
+
+
 async def main():
     print("Analyzing newspaper images...")
     try:
+        result=await get_data()
         # ARTICLES_DB=analyze_all_images("Photo")
         # print("::::::::::::::::",ARTICLES_DB)
-        guj_text=await images_to_text_dict("Photo")
+        # guj_text=await images_to_text_dict("Photo")
         # english_text=await translate_text(guj_text)
     
         # print("res--------------------------------------------",res)
@@ -19,9 +24,9 @@ async def main():
 
     except Exception as e:
         print("Failed during image analysis:",e)
-        ARTICLES_DB = []
+        result= []
 
-    print(f"{len(ARTICLES_DB)} articles indexed.")
+    print(f"{len(result)} articles indexed.")
 
     while True:
         user_prompt = input("\nAsk a news question (or exit): ")
@@ -29,8 +34,8 @@ async def main():
         if user_prompt.lower() == "exit":
             break
 
-        matched = match_articles(user_prompt, ARTICLES_DB)
-        print("match:",matched)
+        matched = match_articles(user_prompt, result)
+        # print("match:",matched)
         if not matched:
             print("No matching news found.")
             continue
