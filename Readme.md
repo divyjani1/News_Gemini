@@ -1,4 +1,4 @@
-App is divided in 3 forms 
+App is divided in 3 parts
 1)First part is getting image data from the given link.
 bot.py- using playwright,we had given link of website,so it will extract the images from that website and store those in folder named sandesh -where you will find images of each an every article,currently no logic given for duplicate images.
 For running this you explicity need to run python3 bot.py if in linux.
