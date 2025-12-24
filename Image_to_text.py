@@ -32,12 +32,51 @@
                 
 #     return ocr_data
 
-
 import os
 import asyncio
 from PIL import Image
 import pytesseract
 from Db.db import db   # absolute import ONLY
+
+import re
+
+
+
+##Conversion into guj_text into clean text
+##
+def clean_gujarati_ocr_text(text: str) -> str:
+    """
+    Cleans OCR noise from Gujarati newspaper text
+    without converting it into headline/body.
+    """
+
+    if not text:
+        return ""
+
+    # Remove OCR garbage symbols
+    text = re.sub(r"[₹$€^*_+=<>|~]", "", text)
+
+    # Remove repeated separator characters
+    text = re.sub(r"[-_=]{2,}", " ", text)
+
+    # Remove isolated page numbers or stray digits on lines
+    text = re.sub(r"\n\s*\d+\s*\n", "\n", text)
+
+    # Fix broken words caused by OCR line wraps
+    text = re.sub(r"(\S)-\n(\S)", r"\1\2", text)
+
+    # Normalize spaces
+    text = re.sub(r"[ \t]{2,}", " ", text)
+
+    # Normalize newlines (keep paragraphs)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+
+    # Remove leading/trailing spaces per line
+    text = "\n".join(line.strip() for line in text.splitlines())
+
+    return text.strip()
+
+#Clean Text function Ends
 
 def ocr_sync(image, lang):
     return pytesseract.image_to_string(image, lang=lang)
@@ -60,7 +99,20 @@ async def images_to_text_dict(image_dir, lang="guj"):
                 )
 
             cleaned_text = text.strip()
+
+            cleaned_text=clean_gujarati_ocr_text(cleaned_text)
             ocr_data[filename] = cleaned_text
+
+            existing = await db["gujrati_text"].find_one({
+            "filename": filename,
+            "language": lang
+        })
+
+            if existing:
+                print(f"Skipped {filename} (already exists)")
+                ocr_data[filename] = existing.get("text")
+                continue
+
 
             resp = await db["gujrati_text"].insert_one({
                 "filename": filename,
@@ -76,10 +128,11 @@ async def images_to_text_dict(image_dir, lang="guj"):
     # print(ocr_data)
     return ocr_data
 
-# async def main():
-#     IMAGE_DIR = "Photo"
-#     result = await images_to_text_dict(IMAGE_DIR)
-#     print("DONE. Total images:", len(result))
+async def main():
+    IMAGE_DIR = "Photo"
+    result = await images_to_text_dict(IMAGE_DIR)
+    print("DONE. Total images:", len(result))
 
-# if __name__ == "__main__":
-#     asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())
+

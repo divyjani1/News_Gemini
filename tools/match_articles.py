@@ -18,7 +18,7 @@
 
 #new one
 def safe_str(value) -> str:
-    return value if isinstance(value, str) else ""
+    return value if isinstance(value, str) else " "
 
 def match_articles(user_prompt: str, articles: list[dict]) -> list[dict]:
     query_words = user_prompt.lower().split()

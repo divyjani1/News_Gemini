@@ -1,7 +1,7 @@
 from Db.db import db
 import asyncio
 async def get_data()->list[dict]:
-    res=await db["english_text"].find().to_list()
+    res=await db["english_text_by_translations2"].find().to_list()
     result=[]
     for i in res:
     # print(str("headline:",str(res.headline)))

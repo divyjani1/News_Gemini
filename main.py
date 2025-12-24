@@ -1,10 +1,10 @@
 
 from tools.match_articles import match_articles
 from tools.generate_answer import ask_gemini_with_articles
-from tools.Image_to_text import images_to_text_dict
+from Image_to_text import images_to_text_dict
 # from to_english import result
 # from Image_analysis.analyze_all import analyze_all_images
-from tools.db_with_translate import translate_text
+from db_with_translate import translate_text
 import asyncio
 from Db.db import db
 from get_data_from_db import get_data

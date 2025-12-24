@@ -30,8 +30,8 @@ async def analyze_all_images(image_dir: str) -> list[dict]:
 
 
         article =await analyze_image_with_gemini(image_path)
-
-        article["id"] = index + 1
+        print("indexxxxxx:",index,"/n filename",filename)
+        # article["id"] = index + 1
         article["source_image"] = filename
         
         articles.append(article)

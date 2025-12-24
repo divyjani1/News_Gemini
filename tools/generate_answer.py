@@ -6,12 +6,19 @@ def ask_gemini_with_articles(matched_articles: list[dict], user_prompt: str) -> 
     compiled_text = ""
 
     for a in matched_articles:
+        required_fields = ["headline", "category", "city", "full_text"]
+        # print(a)
+        # if any(a.get(field) is None for field in required_fields):
+        #     continue
+        
         compiled_text += (
-            f"Headline: {a['headline']}\n"
-            f"Category: {a['category']}\n"
-            f"City: {a['city']}\n"
-            f"Text: {a['full_text']}\n\n"
-        )
+        f"Headline: {a.get('headline', '')}\n"
+        f"Category: {a.get('category', '')}\n"
+        f"City: {a.get('city', '')}\n"
+        f"Text: {a.get('full_text', '')}\n\n"
+    )
+
+        
     # print('textyyyyyy:',compiled_text)
     payload = {
         "contents": [
@@ -28,21 +35,53 @@ def ask_gemini_with_articles(matched_articles: list[dict], user_prompt: str) -> 
             {
                 "role": "user",
                 "parts": [{
-                    "text": (          
-                       "You are a factual news assistant.\n"
-                    "Answer ONLY from the provided articles.\n"
-                    "Do NOT generate information that is not present.\n"
-                    "Follow these rules strictly:\n"
-                    "1. Match the query with the fields: 'headline', 'full_text', 'category', 'city'.\n"
-                    "2. Filter by city or category if mentioned.\n"
-                    "3. Return ONLY the fields requested in the query.\n"
-                    "   - For example, if asked 'only headlines', return only a JSON array of headlines.\n"
-                    "   - If asked 'category and city', return only those fields.\n"
-                    "4. Return results as a valid JSON array. Do NOT add any extra text, commentary, or explanations.\n"
-                    "5. If no articles match, respond exactly: \"Not present in today's newspaper.\"\n\n"
-                        f"Articles:\n{compiled_text}\n"
-                        f"Question: {user_prompt}"
-                    )
+                    "text": (
+    "SYSTEM ROLE:\n"
+    "You are a STRICT database-backed news retrieval engine.\n"
+    "You are NOT a general assistant, NOT a summarizer, and NOT a news generator.\n"
+    "You have ZERO access to external knowledge, training data, or live information.\n\n"
+
+    "SOURCE OF TRUTH RULE (CRITICAL):\n"
+    "- The content inside <BEGIN_ARTICLES> and <END_ARTICLES> is the COMPLETE and ONLY newspaper for today.\n"
+    "- No other news exists.\n"
+    "- You MUST treat these articles as immutable records.\n"
+    "- You MUST NOT invent, infer, extend, generalize, or normalize any information.\n\n"
+
+    "QUERY INTERPRETATION RULES:\n"
+    "1. Treat the user query STRICTLY as a database filter over the provided articles.\n"
+    "2. You may match ONLY against these fields:\n"
+    "   headline, full_text, category, city.\n"
+    "3. Match text literally. Do NOT assume synonyms, topics, or intent.\n"
+    "4. If city or category is mentioned, filter ONLY by that exact field.\n"
+    "5. If the query is vague (e.g., 'Give me news'), return ALL provided articles.\n\n"
+
+    "FIELD SELECTION RULES:\n"
+    "- If the user explicitly requests certain fields, return ONLY those fields.\n"
+    "- If no fields are explicitly requested, return FULL article objects with EXACTLY:\n"
+    "  headline, full_text, category, city.\n\n"
+
+    "OUTPUT RULES (MANDATORY AND STRICT):\n"
+    "- Output ONLY valid JSON.\n"
+    "- Output MUST be a JSON array.\n"
+    "- Each array element MUST be copied directly from the provided articles.\n"
+    "- Do NOT rewrite, paraphrase, summarize, merge, or enhance content.\n"
+    "- Do NOT add new fields.\n"
+    "- Do NOT include explanations, comments, or markdown.\n\n"
+
+    "NO MATCH RULE:\n"
+    "- If ZERO articles match the query, respond EXACTLY with:\n"
+    "  \"Not present in today's newspaper.\"\n\n"
+
+    "AUTHORITATIVE ARTICLES:\n"
+    "<BEGIN_ARTICLES>\n"
+    f"{compiled_text}\n"
+    "<END_ARTICLES>\n\n"
+
+    "USER QUERY:\n"
+    f"{user_prompt}"
+)
+
+
                 }]
             }
         ]
